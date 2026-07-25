@@ -193,9 +193,10 @@ class FpsChangerWindow(QWidget):
         QMessageBox.information(
             self, "Conversion Complete",
             f"Converted clip saved to:\n{self.session.out_path}\n\n"
-            "(Automatic replacement in Resolve isn't wired up yet -- "
-            "this is Pass 1.)"
+            "Run FPS Changer again from Resolve to import this into "
+            "the 'FPS' bin automatically."
         )
+        self.close()
 
     def _on_convert_error(self, message: str):
         self.session.mark_error(message)

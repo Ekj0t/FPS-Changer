@@ -23,7 +23,8 @@ PROJECT_ROOT = Path(r"D:\FPS Changer")
 sys.path.insert(0, str(PROJECT_ROOT))
 
 import config
-from main.resolve_render import render_selected_clip, RenderError
+from main.resolve_render import render_selected_clip, RenderError, get_resolve
+from main.resolve_import import import_finished_conversions
 
 
 def show_error_dialog(title: str, message: str):
@@ -60,14 +61,23 @@ def launch_gui(session_file_path: Path):
 
     with open(log_path, "a", encoding="utf-8") as log_file:
         subprocess.Popen(
-            [str(config.VENV_PYTHONW), str(gui_script), str(session_file_path)],
+            [str(config.VENV_PYTHON), str(gui_script), str(session_file_path)],
             stdout=log_file,
             stderr=log_file,
+            creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP,
             close_fds=True,
         )
 
 
 def main():
+    # Pull in any previously finished conversions first -- non-fatal if
+    # this fails, since it shouldn't block converting the newly selected clip.
+    try:
+        resolve = get_resolve()
+        import_finished_conversions(resolve)
+    except Exception as e:
+        log_exception("import_finished_conversions failed", e)
+
     try:
         session = render_selected_clip()
     except RenderError as e:

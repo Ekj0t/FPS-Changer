@@ -142,12 +142,17 @@ def wait_for_render(project, job_id, poll_interval=0.5, timeout=600):
 
 # ── orchestrator ───────────────────────────────────────────────────
 
-def render_selected_clip() -> Session:
+def render_selected_clip(resolve=None) -> Session:
     """
     Full step 1-2 flow. Called by entry_script.py.
     Returns a Session object (already saved to disk with status='rendered').
+
+    Accepts an optional pre-connected `resolve` object so callers that
+    already connected (e.g. entry_script.py, for the import-pending-
+    conversions step) don't need to reconnect a second time.
     """
-    resolve = get_resolve()
+    if resolve is None:
+        resolve = get_resolve()
     project = get_current_project(resolve)
     timeline, item = get_playhead_timeline_item(project)
 

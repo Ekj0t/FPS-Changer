@@ -78,12 +78,14 @@ def out_clip_path(clip_name: str, run_id: str) -> Path:
 # ─────────────────────────────────────────────
 DEFAULT_FPS_OPTIONS = [1, 2, 4, 6, 8, 10, 12, 15, 24]
 
+FPS_BIN_NAME = "FPS"
 # Session states — simple state machine, see session.py
 class Status:
     RENDERING   = "rendering"
     RENDERED    = "rendered"
     CONVERTING  = "converting"
     CONVERTED   = "converted"
+    IMPORTED    = "imported"
     REPLACING   = "replacing"
     DONE        = "done"
     ERROR       = "error"
