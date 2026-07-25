@@ -115,7 +115,8 @@ class Session:
 
 
 def _sanitize(name: str) -> str:
-    """Strip characters that are unsafe in filenames."""
+    """Strip characters that are unsafe in filenames, and drop any extension."""
+    name = Path(name).stem  # removes .mov / .mp4 / etc. if present
     keep = "-_.() "
     cleaned = "".join(c if c.isalnum() or c in keep else "_" for c in name)
     return cleaned.strip().replace(" ", "_")
