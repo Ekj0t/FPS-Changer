@@ -157,9 +157,3 @@ FPS Changer/
 - Tested primarily on Windows; paths and subprocess handling are Windows-specific
   (`pythonw.exe`, `mklink`, etc.). Adapting for macOS/Linux would require path and
   process-launch changes.
-
----
-
-## License
-
-*(Add your preferred license here.)*
