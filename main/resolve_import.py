@@ -84,9 +84,25 @@ def import_finished_conversions(resolve, log=print) -> int:
             session.set_status(config.Status.IMPORTED)
             imported_count += 1
             log(f"[FPS Changer] Imported {session.out_path.name} into '{config.FPS_BIN_NAME}' bin.")
+            _archive_session_file(session_path)
 
         except Exception as e:
             session.mark_error(f"Import failed: {e}")
             log(f"[FPS Changer] Failed to import {session_path.name}: {e}")
 
     return imported_count
+
+
+def _archive_session_file(session_path: Path):
+    """
+    Moves a finished session's JSON out of _session/ into archive/, so the
+    active session folder only ever contains work still in progress. The
+    out_path media file itself is NEVER touched here -- it's the clip
+    Resolve is actively linking to.
+    """
+    try:
+        import shutil
+        dest = config.ARCHIVE_DIR / session_path.name
+        shutil.move(str(session_path), str(dest))
+    except Exception:
+        pass  # non-fatal -- worst case the json just stays in _session/

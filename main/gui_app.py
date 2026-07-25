@@ -54,11 +54,24 @@ class ConvertWorker(QThread):
         try:
             run_conversion(self.in_path, self.out_path,
                             self.target_fps, self.project_fps)
+            self._cleanup_in_file()
             self.finished_ok.emit()
         except ConversionError as e:
             self.finished_error.emit(str(e))
         except Exception as e:
             self.finished_error.emit(f"Unexpected error: {e}")
+
+    def _cleanup_in_file(self):
+        """
+        The _in.mp4 render is only ever read by ffmpeg -- once conversion
+        succeeds, it's dead weight. Deleting it here (not out_path) keeps
+        staging/ from growing unbounded, while never touching the file
+        Resolve is actually linking to.
+        """
+        try:
+            self.in_path.unlink(missing_ok=True)
+        except Exception:
+            pass  # non-fatal -- leftover _in.mp4 is harmless, just clutter
 
 
 class FpsChangerWindow(QWidget):
