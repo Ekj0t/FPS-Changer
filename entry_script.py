@@ -69,17 +69,51 @@ def launch_gui(session_file_path: Path):
         )
 
 
+def show_info_dialog(title: str, message: str):
+    try:
+        import ctypes
+        ctypes.windll.user32.MessageBoxW(0, message, title, 0x40)  # MB_ICONINFORMATION
+    except Exception:
+        print(f"[{title}] {message}")
+
+
 def main():
-    # Pull in any previously finished conversions first -- non-fatal if
-    # this fails, since it shouldn't block converting the newly selected clip.
+    resolve = None
+    imported_count = 0
     try:
         resolve = get_resolve()
-        import_finished_conversions(resolve)
+        imported_count = import_finished_conversions(resolve)
     except Exception as e:
         log_exception("import_finished_conversions failed", e)
 
+    # Decide whether the user wants to render a new clip, or just triggered
+    # this run to pull in a finished conversion (playhead on nothing).
     try:
-        session = render_selected_clip()
+        if resolve is None:
+            resolve = get_resolve()
+        from main.resolve_render import get_current_project, try_get_playhead_timeline_item
+        project = get_current_project(resolve)
+        _, item = try_get_playhead_timeline_item(project)
+    except Exception as e:
+        log_exception("Playhead check failed", e)
+        show_error_dialog("FPS Changer - Error", str(e))
+        return
+
+    if item is None:
+        if imported_count > 0:
+            show_info_dialog(
+                "FPS Changer",
+                f"Imported {imported_count} finished clip(s) into the '{config.FPS_BIN_NAME}' bin."
+            )
+        else:
+            show_info_dialog(
+                "FPS Changer",
+                "No clip under the playhead, and no finished conversions to import."
+            )
+        return
+
+    try:
+        session = render_selected_clip(resolve)
     except RenderError as e:
         log_exception("render_selected_clip failed", e)
         show_error_dialog("FPS Changer - Render Failed", str(e))

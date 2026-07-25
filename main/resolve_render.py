@@ -77,6 +77,20 @@ def get_playhead_timeline_item(project):
     return timeline, item
 
 
+def try_get_playhead_timeline_item(project):
+    """
+    Same as get_playhead_timeline_item, but returns (timeline, None)
+    instead of raising when nothing is under the playhead. Used to
+    distinguish "user wants to render a new clip" from "user just wants
+    to trigger the pending-imports check" -- see entry_script.py.
+    """
+    timeline = project.GetCurrentTimeline()
+    if timeline is None:
+        raise RenderError("No timeline is currently open.")
+    item = timeline.GetCurrentVideoItem()
+    return timeline, item
+
+
 # ── rendering ───────────────────────────────────────────────────────
 
 def start_render(project, timeline, item, session: Session):
