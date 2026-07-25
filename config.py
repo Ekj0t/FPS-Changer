@@ -21,6 +21,7 @@ VENV_DIR      = PROJECT_ROOT / "venv"
 # Python executable inside the project's venv (used by entry_script.py
 # to launch gui_app.py as a subprocess with the right interpreter)
 VENV_PYTHON = VENV_DIR / "Scripts" / "python.exe"
+VENV_PYTHONW = VENV_DIR / "Scripts" / "pythonw.exe"
 
 # Ensure runtime folders exist (safe to call every run)
 for _dir in (STAGING_DIR, ARCHIVE_DIR, SESSION_DIR, LOGS_DIR):

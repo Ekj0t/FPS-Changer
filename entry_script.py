@@ -60,10 +60,9 @@ def launch_gui(session_file_path: Path):
 
     with open(log_path, "a", encoding="utf-8") as log_file:
         subprocess.Popen(
-            [str(config.VENV_PYTHON), str(gui_script), str(session_file_path)],
+            [str(config.VENV_PYTHONW), str(gui_script), str(session_file_path)],
             stdout=log_file,
             stderr=log_file,
-            creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP,
             close_fds=True,
         )
 
